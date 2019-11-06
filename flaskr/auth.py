@@ -35,6 +35,7 @@ def register():
             )
             db.commit()
             return redirect(url_for('auth.login'))
+            #flash('Hit redirect')
 
         flash(error)
 
@@ -60,7 +61,9 @@ def login():
             session.clear()
             session['user_id'] = user['id']
             return redirect(url_for('index'))
-
+        flash('WTF!')
+        
+        
         flash(error)
 
     return render_template('auth/login.html')
@@ -85,6 +88,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
+            flash('login required????')
             return redirect(url_for('auth.login'))
 
         return view(**kwargs)
