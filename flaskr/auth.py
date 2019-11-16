@@ -1,13 +1,12 @@
 import functools
 
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
-)
+from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
+
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskr.db import get_db
 
-bp = Blueprint('auth', __name__, url_prefix='/auth/')
+bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
@@ -26,7 +25,7 @@ def register():
         elif db.execute(
                 'SELECT id FROM user WHERE username = ?', (username,)
         ).fetchone() is not None:
-            error = 'User {} is already registered.'.format(username)
+            error = 'User {0} is already registered.'.format(username)
 
         if error is None:
             db.execute(
@@ -34,9 +33,9 @@ def register():
                 (username, generate_password_hash(password))
             )
             db.commit()
+            print("test1")
             return redirect(url_for('auth.login'))
-            #flash('Hit redirect')
-
+            
         flash(error)
 
     return render_template('auth/register.html')
@@ -60,9 +59,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('index'))
-        flash('WTF!')
-        
+            return redirect(url_for('index'))        
         
         flash(error)
 
@@ -76,10 +73,12 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = get_db().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id)
+            'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
+        print('Test')
+        print(g.user)
 
-@bp.route('/lgout')
+@bp.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
